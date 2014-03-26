@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+    <script>
+
+
+    var KEYCODE_ENTER = 13;		//usefull keycode
+	var KEYCODE_SPACE = 32;		//usefull keycode
+	var KEYCODE_UP = 38;		//usefull keycode
+	var KEYCODE_LEFT = 37;		//usefull keycode
+	var KEYCODE_RIGHT = 39;		//usefull keycode
+	var KEYCODE_DOWN = 40;		//usefull keycode
+	var KEYCODE_W = 87;			//usefull keycode
+	var KEYCODE_A = 65;			//usefull keycode
+	var KEYCODE_D = 68;			//usefull keycode
+	var KEYCODE_S = 83;			//usefull keycode
+		var pressed = {};
+
+        function init() {
+
+            // code here.
+         
+   	        var stage = new createjs.Stage("demoCanvas");
+
+            stage.enableMouseOver(10);
+			stage.mouseMoveOutside = true;
+
+
+			var text = new createjs.Text();
+			text.text = "Hello World" 
+			stage.addChild(text);
+			text.x = 200;
+			text.y = 200;
+
+            var circle  = new createjs.Shape();
+			circle.graphics.beginFill("red").drawCircle(0, 0, 50);
+			circle.x = 100;
+			circle.y = 100;
+			stage.addChild(circle);
+
+
+			var previous;
+
+			circle.on("mousedown", function(evt) {
+				//console.log("down");
+
+				previous = {x:evt.stageX,y:evt.stageY};
+
+			});
+
+			circle.on("click", function(evt) {
+				//console.log("up");
+			});
+
+			circle.on("pressmove", function(evt) {
+
+		
+				//stage.update();
+				var difX = evt.stageX - previous.x;
+				var difY = evt.stageY - previous.y;
+
+				previous = {x:evt.stageX,y:evt.stageY};
+
+				//console.log("move "+difX+":"+difY);
+
+				this.x += difX;
+				this.y += difY;
+			});
+			
+			circle.on("rollover", function(evt) {
+				//console.log("in");
+			});
+			
+			circle.on("rollout", function(evt) {
+				//console.log("out");
+			});
+
+
+
+   createjs.Ticker.addEventListener("tick", handleTick);
+   createjs.Ticker.setFPS(60);
+
+    function handleTick() {
+
+
+		if(leftHeld)
+		{
+			//circle.x -= 2;
+			
+			animateCharacter.x -= 2;
+		}
+
+		if(rightHeld)
+		{
+			//circle.x += 2;
+			
+			animateCharacter.x += 2;
+
+		}
+
+		if(upHeld)
+		{
+			//circle.y -= 2;
+			
+			animateCharacter.y -= 2;
+
+		}
+
+		if(downHeld)
+		{
+			//circle.y += 2;
+			
+			animateCharacter.y += 2;
+
+		}
+
+ 
+      	 
+       	 stage.update();
+
+    }
+
+
+
+	document.onkeydown = handleKeyDown;
+	document.onkeyup = handleKeyUp;
+
+
+
+	var leftHeld = false;
+	var rightHeld= false;
+	var upHeld= false;
+	var downHeld= false;
+
+
+
+
+	function handleKeyDown(e) {
+
+		//console.log("down");
+		//cross browser issues exist
+
+
+
+		if(!e){ var e = window.event; }
+
+		if(pressed[e.keyCode])return false;
+
+		
+
+
+		switch(e.keyCode) {
+
+
+	
+
+			case KEYCODE_SPACE:	console.log("space down"); return false;
+
+			case KEYCODE_A:
+			case KEYCODE_LEFT:pressed[e.keyCode] = true;	leftHeld = true; animateCharacter.gotoAndPlay("left"); return false;
+
+			case KEYCODE_D:
+			case KEYCODE_RIGHT: pressed[e.keyCode] = true;rightHeld = true; animateCharacter.gotoAndPlay("right");return false;
+
+			case KEYCODE_W:
+			case KEYCODE_UP:	pressed[e.keyCode] = true;upHeld = true;animateCharacter.gotoAndPlay("up"); return false;
+
+			case KEYCODE_S:
+			case KEYCODE_DOWN:	pressed[e.keyCode] = true;downHeld = true; animateCharacter.gotoAndPlay("down");return false;
+
+			case KEYCODE_ENTER:	 console.log("Enter");return false;
+		}
+	}
+
+	function handleKeyUp(e) {
+
+		//console.log("up");
+		//cross browser issues exist
+		if(!e){ var e = window.event; }
+
+	
+		delete pressed[e.keyCode];
+
+		switch(e.keyCode) {
+			case KEYCODE_SPACE:	console.log("space up"); return false;
+
+			case KEYCODE_A:
+			case KEYCODE_LEFT:	leftHeld = false;if(Object.keys(pressed).length==0) animateCharacter.gotoAndPlay("left_idle"); return false;
+
+			case KEYCODE_D:
+			case KEYCODE_RIGHT: rightHeld = false;if(Object.keys(pressed).length==0) animateCharacter.gotoAndPlay("right_idle"); return false;
+
+			case KEYCODE_W:
+			case KEYCODE_UP:	upHeld = false;if(Object.keys(pressed).length==0) animateCharacter.gotoAndPlay("up_idle"); return false;
+
+			case KEYCODE_S:
+			case KEYCODE_DOWN:	downHeld = false;if(Object.keys(pressed).length==0)  animateCharacter.gotoAndPlay("down_idle"); return false;
+		}
+	}
+
+
+/*
+		var image = new Image();
+		image.src = "assets/stand.png";
+		image.onload = handleImageLoad;
+console.log("yo");
+
+
+
+var character;
+
+function handleImageLoad(event) 
+{
+		var image = event.target;
+		character;
+
+		console.log("yo");
+		
+
+		bitmap = new createjs.Bitmap(image);
+		bitmap.x = 150;
+		bitmap.y = 150;
+		bitmap.regX = bitmap.image.width/2;
+		bitmap.regY = bitmap.image.height/2;
+
+		bitmap.name = "yo";
+		bitmap.cursor = "pointer";
+
+		stage.addChild(bitmap);
+		stage.update();
+	}
+}*/
+
+
+	var spriteSheet = new createjs.SpriteSheet({
+				"animations":{
+					"down": {"frames":[0,1,2,1],speed:0.1},
+					"left": {"frames":[3,4,5,4],"speed":0.1},
+					"right": {"frames":[6,7,8,7],"speed":0.1},
+					"up":{"frames":[9,10,11,10],"speed":0.1},
+					"down_idle":1,
+					"left_idle":4,
+					"right_idle":7,
+					"up_idle":10,
+					},
+					"images": ["assets/move.png"],
+					"frames":
+						{
+							"height": 32,
+							"width":30,
+							"regX": 0,
+							"regY": 0,
+							"count": 12,
+						}
+				});
+
+
+			var animateCharacter = new createjs.Sprite(spriteSheet);
+			animateCharacter.x = 360;
+			animateCharacter.y = 22;
+			// Add Grant to the stage, and add it as a listener to Ticker to get updates each frame.
+			stage.addChild(animateCharacter);
+
+
+
+
+}
+
+
+        
+
+
+    </script>
+</head>
+<body onLoad="init();">
+    <canvas id="demoCanvas" width="500" height="300">
+        alternate content
+    </canvas>
+</body>
+</html>
