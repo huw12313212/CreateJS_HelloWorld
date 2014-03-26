@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+    <script src="http://code.createjs.com/createjs-2013.12.12.min.js"></script>
     <script>
 
 
@@ -15,16 +15,27 @@
 	var KEYCODE_A = 65;			//usefull keycode
 	var KEYCODE_D = 68;			//usefull keycode
 	var KEYCODE_S = 83;			//usefull keycode
-		var pressed = {};
+	var pressed = {};
 
         function init() {
 
-            // code here.
-         
    	        var stage = new createjs.Stage("demoCanvas");
 
             stage.enableMouseOver(10);
 			stage.mouseMoveOutside = true;
+
+
+			var backgroundImage = new Image();
+			backgroundImage.src = "assets/map.png";
+			
+
+			var background = new createjs.Bitmap(backgroundImage);
+			background.x = 0;
+			background.y = 0;
+			background.regX = 0;
+			background.regY = 0;
+
+			stage.addChild(background);
 
 
 			var text = new createjs.Text();
@@ -32,6 +43,11 @@
 			stage.addChild(text);
 			text.x = 200;
 			text.y = 200;
+
+
+
+
+			/*
 
             var circle  = new createjs.Shape();
 			circle.graphics.beginFill("red").drawCircle(0, 0, 50);
@@ -75,7 +91,7 @@
 			circle.on("rollout", function(evt) {
 				//console.log("out");
 			});
-
+*/
 
 
    createjs.Ticker.addEventListener("tick", handleTick);
@@ -138,11 +154,6 @@
 
 	function handleKeyDown(e) {
 
-		//console.log("down");
-		//cross browser issues exist
-
-
-
 		if(!e){ var e = window.event; }
 
 		if(pressed[e.keyCode])return false;
@@ -200,37 +211,7 @@
 	}
 
 
-/*
-		var image = new Image();
-		image.src = "assets/stand.png";
-		image.onload = handleImageLoad;
-console.log("yo");
 
-
-
-var character;
-
-function handleImageLoad(event) 
-{
-		var image = event.target;
-		character;
-
-		console.log("yo");
-		
-
-		bitmap = new createjs.Bitmap(image);
-		bitmap.x = 150;
-		bitmap.y = 150;
-		bitmap.regX = bitmap.image.width/2;
-		bitmap.regY = bitmap.image.height/2;
-
-		bitmap.name = "yo";
-		bitmap.cursor = "pointer";
-
-		stage.addChild(bitmap);
-		stage.update();
-	}
-}*/
 
 
 	var spriteSheet = new createjs.SpriteSheet({
@@ -257,10 +238,67 @@ function handleImageLoad(event)
 
 
 			var animateCharacter = new createjs.Sprite(spriteSheet);
-			animateCharacter.x = 360;
-			animateCharacter.y = 22;
+			animateCharacter.x = 350;
+			animateCharacter.y = 250;
 			// Add Grant to the stage, and add it as a listener to Ticker to get updates each frame.
 			stage.addChild(animateCharacter);
+
+
+
+
+			var iventoryImage = new Image();
+			iventoryImage.src = "assets/iventory.png";
+			
+
+			var iventory = new createjs.Bitmap(iventoryImage);
+			iventory.x = 0;
+			iventory.y = 450;
+
+			stage.addChild(iventory);
+
+
+		var inventoryShow = false;
+
+		stage.on("stagemousemove", function(evt) {
+
+			//console.log("X:"+evt.stageX+" :"+"Y:"+evt.stageY);
+
+			if(inventoryShow)
+			{
+
+				if(evt.stageX>250 || evt.stageY<300)
+				{
+					inventoryShow = false;
+					var tween2 = createjs.Tween.get(iventory, {loop:false}).to({y:450}, 500, createjs.Ease.bounceOut);
+					console.log("disappear");
+
+					 createjs.Sound.play("sound"); 
+				}
+			}
+			else
+			{
+
+				if(evt.stageX<250 && evt.stageY>450)
+				{
+					inventoryShow = true;
+					var tween1 = createjs.Tween.get(iventory, {loop:false}).to({y:300}, 500, createjs.Ease.bounceOut);
+					console.log("show");
+
+					createjs.Sound.play("sound"); 
+				}
+				
+			}
+		});
+
+
+
+
+		 createjs.Sound.alternateExtensions = ["mp3"];
+		 createjs.Sound.registerSound("assets/M-GameBG.ogg", "background");
+		 createjs.Sound.registerSound("assets/Game-Spawn.ogg", "sound");
+
+		 var instance = createjs.Sound.play("background",{loop:true}); 
+		 instance.volume = 1;
 
 
 
@@ -268,13 +306,12 @@ function handleImageLoad(event)
 }
 
 
-        
 
 
     </script>
 </head>
 <body onLoad="init();">
-    <canvas id="demoCanvas" width="500" height="300">
+    <canvas id="demoCanvas" width="640" height="480">
         alternate content
     </canvas>
 </body>
